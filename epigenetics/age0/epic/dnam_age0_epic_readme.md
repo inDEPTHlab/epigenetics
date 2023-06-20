@@ -15,6 +15,7 @@ See also [dnam_age0_epic_prep.R](https://github.com/inDEPTHlab/epigenetics/blob/
 - **Selection_GENR_MethylEPIC_release1_birth_20230619.sav**: Selection file in SPSS format (can be read into R with foreign::read.spss). Contains both SampleIDs, which match row.names in dnam_age0_epic_\*.data, but also IDC to merge with the rest of the Generation R data.
   Contains also batch information, most importantly Sample_Plate.
 - **wbc_birth_450K_epic_combined.RData**: Cell proportions in .RData format. Can be read in with load("wbc_birth_450K_epic_combined.RData") and matched/merged using SampleID. Reference panel based on FlowSorted.CordBloodCombined.450k. Created using [cell_proportion_450K_epic_combined.R](https://github.com/inDEPTHlab/epigenetics/blob/main/epigenetics/age0/epic/cell_proportion_450K_epic_combined.R).
+- **dnam_age0_epic_descriptives.Rdata**: A data.frame with descriptive information for each CpG.
 
 ## General Analysis Workflow
 1. Read in methylation data
