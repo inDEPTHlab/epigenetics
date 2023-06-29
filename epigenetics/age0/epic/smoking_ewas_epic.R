@@ -18,8 +18,8 @@ samples_birth_epic.data <- samples_birth_epic.data[samples_birth_epic.data$EwasC
 general_smoking_samples.data <- merge(general_smoking.data, samples_birth_epic.data, by = "IDC")
 
 # Merge cell count data
-load("/home/599032/cell_proportion/wbc_birth_epic_combined.RData")
-general_smoking_samples_counts.data <- merge(general_smoking_samples.data, wbc_birth_epic_combined.data, by = "SampleID")
+load("/home/599032/cell_proportion/GENR_EPICv1METH_birth_CellTypes_combined.RData")
+general_smoking_samples_counts.data <- merge(general_smoking_samples.data, GENR_EPICv1METH_birth_CellTypes_combined.data, by = "SampleID")
 
 # Reduce data to only relevant variables and complete maternal smoking
 phenotype.data <- general_smoking_samples_counts.data[!is.na(general_smoking_samples_counts.data$msmoke),c("IDC", "MOTHER.x", "SampleID", "GENDER", "GESTBIR", "msmoke", "EDUCM", "CD8T", "NK", "CD4T", "Bcell", "Gran", "Mono", "nRBC", "Sample_Plate")]
@@ -48,14 +48,14 @@ variable_names <- c("GENDER", "GESTBIR", "msmoke", "EDUCM", "CD8T", "NK", "CD4T"
 ncp.max <- length(variable_names)-1
 
 # Use 10 fold cross-validation to determine optimum number of componencts
-#set.seed(20230615)
-#nb <- estim_ncpFAMD(phenotype.data[,variable_names], ncp.max = ncp.max, nbsim = 10)
-#nb$ncp
+set.seed(20230615)
+nb <- estim_ncpFAMD(phenotype.data[,variable_names], ncp.max = ncp.max, nbsim = 10)
+nb$ncp
 
 # Save elbow plot
-#png(file="figures/smoking_elbow_plot.png")
-#plot(0:ncp.max, nb$criterion, xlab = "nb dim", ylab = "MSEP")
-#dev.off()
+png(file="figures/smoking_elbow_plot.png")
+plot(0:ncp.max, nb$criterion, xlab = "nb dim", ylab = "MSEP")
+dev.off()
 
 # Perform PCA based imputation using the optimum number of components determined by CV
 set.seed(20230423)
@@ -69,20 +69,20 @@ phenotype_imputed.data <- cbind(phenotype.data[c("IDC", "SampleID")],phenotype_i
 phenotype_imputed.data$msmoke <- relevel(phenotype_imputed.data$msmoke, ref = "never smoked")
 
 # Load EPIC methylation data
-load("data/final/dnam_age0_epic_beta.Rdata")
+load("data/final/GENR_EPICv1METH_Norm_Betas_birth_ALL.RData")
 
 # Match methylation data participants to phenotype data
-dnam_age0_epic_beta.data <- dnam_age0_epic_beta.data[as.character(phenotype_imputed.data$SampleID), ]
-table(row.names(dnam_age0_epic_beta.data) == phenotype_imputed.data$SampleID)
+GENR_EPICv1METH_Norm_Betas_birth_ALL.data <- GENR_EPICv1METH_Norm_Betas_birth_ALL.data[as.character(phenotype_imputed.data$SampleID), ]
+table(row.names(GENR_EPICv1METH_Norm_Betas_birth_ALL.data) == phenotype_imputed.data$SampleID)
 
 regress <- function(cpg) {
   cpg_phenotype.data <- cbind(cpg, phenotype_imputed.data)
   coef(summary(lm(cpg ~ msmoke + GENDER + GESTBIR + CD8T + NK + CD4T + Bcell + Gran + Mono + nRBC + EDUCM + Sample_Plate, data = cpg_phenotype.data)))[2,]
 }
 
-smoking_ewas.list <- pbmclapply(dnam_age0_epic_beta.data, regress, mc.cores = 12)
+smoking_ewas.list <- pbmclapply(GENR_EPICv1METH_Norm_Betas_birth_ALL.data, regress, mc.cores = 12)
 smoking_ewas.data <- as.data.frame(do.call(rbind, smoking_ewas.list))
-smoking_ewas.data$cpg <- names(dnam_age0_epic_beta.data)
+smoking_ewas.data$cpg <- names(GENR_EPICv1METH_Norm_Betas_birth_ALL.data)
 save(smoking_ewas.data, file = "results/smoking_ewas.Rdata")
 
 # Bacon

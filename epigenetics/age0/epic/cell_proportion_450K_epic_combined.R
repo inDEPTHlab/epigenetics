@@ -15,22 +15,22 @@ save(wbc_birth_450K_combined.data, file = "wbc_birth_450K_combined.RData")
 
 
 ### Birth EPIC
-load("/home/599032/epic_qc/data/final/dnam_age0_epic_beta.Rdata")
+load("/home/599032/epic_qc/data/final/GENR_EPICv1METH_Norm_Betas_birth_ALL.RData")
 
 # Estimate cell counts using combined reference panel
-wbc_birth_epic_combined.data <-  as.data.frame(meffil.estimate.cell.counts.from.betas(t(dnam_age0_epic_beta.data), "combined cord blood", verbose = T))
+GENR_EPICv1METH_birth_CellTypes_combined.data <-  as.data.frame(meffil.estimate.cell.counts.from.betas(t(GENR_EPICv1METH_Norm_Betas_birth_ALL.data), "combined cord blood", verbose = T))
 
 # Add participant ID
-wbc_birth_epic_combined.data$SampleID <- rownames(dnam_age0_epic_beta.data)
+GENR_EPICv1METH_birth_CellTypes_combined.data$SampleID <- rownames(GENR_EPICv1METH_birth_CellTypes_combined.data)
 
 # Save cell count data
-save(wbc_birth_epic_combined.data, file = "wbc_birth_epic_combined.RData")
+save(GENR_EPICv1METH_birth_CellTypes_combined.data, file = "GENR_EPICv1METH_birth_CellTypes_combined.RData")
 
 ### Merge and compare 450K and EPIC
 describe(wbc_birth_450K_combined.data)
-describe(wbc_birth_epic_combined.data)
+describe(GENR_EPICv1METH_birth_CellTypes_combined.data)
 
-wbc_birth_450K_epic_combined.data <- rbind(wbc_birth_450K_combined.data, wbc_birth_epic_combined.data)
+wbc_birth_450K_epic_combined.data <- rbind(wbc_birth_450K_combined.data, GENR_EPICv1METH_birth_CellTypes_combined.data)
 save(wbc_birth_450K_epic_combined.data, file = "wbc_birth_450K_epic_combined.RData")
 
 ### Birth 450K functional normalization with ALSPAC

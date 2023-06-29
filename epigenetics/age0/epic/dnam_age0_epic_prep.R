@@ -8,13 +8,13 @@ load("data/original/beta_all_QN.RData")
 # Exclude participants set as missing by data management and transpose, so that CpG are columns, participants are row
 sample.data <- read.spss("data/original/Selection_GENR_MethylEPIC_release1_birth_20230512.sav", to.data.frame = T)
 samples_to_include <- sample.data[sample.data$EwasChildMethylEpic != 888, "SampleID"]
-dnam_age0_epic_beta.data <- as.data.frame(t(beta_all_QC[,(colnames(beta_all_QC) %in% samples_to_include)]))
-save(dnam_age0_epic_beta.data, file = "data/final/dnam_age0_epic_beta.Rdata")
+GENR_EPICv1METH_Norm_Betas_birth_ALL.data <- as.data.frame(t(beta_all_QC[,(colnames(beta_all_QC) %in% samples_to_include)]))
+save(GENR_EPICv1METH_Norm_Betas_birth_ALL.data, file = "data/final/GENR_EPICv1METH_Norm_Betas_birth_ALL.RData")
 beta_all_QC <- NULL; gc()
 
 # Convert to M-values
-dnam_age0_epic_M.data <- B2M(dnam_age0_epic_beta.data)
-save(dnam_age0_epic_M.data, file = "data/final/dnam_age0_epic_M.Rdata")
+GENR_EPICv1METH_Norm_Mvalues_birth.data <- B2M(GENR_EPICv1METH_Norm_Betas_birth_ALL.data)
+save(GENR_EPICv1METH_Norm_Mvalues_birth.data, file = "data/final/GENR_EPICv1METH_Norm_Mvalues_birth.RData")
 
 # Winsorize and Trim
 
@@ -66,28 +66,30 @@ winsorize <- function(x, probs = NULL, cutpoints = NULL , replace = c(cutpoints[
 }
 
 # Winsorize at 3IQR
-dnam_age0_epic_beta_3IQR_winsorized.list <- lapply(dnam_age0_epic_beta.data,winsorize) 
-dnam_age0_epic_beta_3IQR_winsorized.data <- as.data.frame(do.call(cbind, dnam_age0_epic_beta_3IQR_winsorized.list))
-save(dnam_age0_epic_beta_3IQR_winsorized.data, file = "data/final/dnam_age0_epic_beta_3IQR_winsorized.Rdata")
+GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.list <- lapply(GENR_EPICv1METH_Norm_Betas_birth_ALL.data,winsorize) 
+GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data <- as.data.frame(do.call(cbind, GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.list))
+row.names(GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data) <- row.names(GENR_EPICv1METH_Norm_Betas_birth_ALL.data)
+save(GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data, file = "data/final/GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.RData")
 
 # Trim at 3IQR
-dnam_age0_epic_beta_3IQR_NA.list <- lapply(dnam_age0_epic_beta.data, function(cpg) {
+dnam_age0_epic_beta_3IQR_NA.list <- lapply(GENR_EPICv1METH_Norm_Betas_birth_ALL.data, function(cpg) {
   winsorize(cpg, replace = NA)
 }) 
-dnam_age0_epic_beta_3IQR_NA.data <- as.data.frame(do.call(cbind, dnam_age0_epic_beta_3IQR_NA.list))
-save(dnam_age0_epic_beta_3IQR_NA.data, file = "data/final/dnam_age0_epic_beta_3IQR_NA.Rdata")
+GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data <- as.data.frame(do.call(cbind, GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.list))
+row.names(GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data) <- row.names(GENR_EPICv1METH_Norm_Betas_birth_ALL.data)
+save(GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data, file = "data/final/GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.RData")
 
 # Check whether distributions make sense
-summary(dnam_age0_epic_beta.data[100000:100003])
-summary(dnam_age0_epic_M.data[100000:100003])
-summary(dnam_age0_epic_beta_3IQR_winsorized.data[100000:100003])
-summary(dnam_age0_epic_beta_3IQR_NA.data[100000:100003])
+summary(GENR_EPICv1METH_Norm_Betas_birth_ALL.data[100000:100003])
+summary(GENR_EPICv1METH_Norm_Mvalues_birth.data[100000:100003])
+summary(GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data[100000:100003])
+summary(GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data[100000:100003])
 
 # Check whether correlations between different transformations make sense
-cor(data.frame(dnam_age0_epic_beta.data[100000], dnam_age0_epic_M.data[100000], dnam_age0_epic_beta_3IQR_winsorized.data[100000], dnam_age0_epic_beta_3IQR_NA.data[100000]), use = "pairwise.complete.obs")
-cor(data.frame(dnam_age0_epic_beta.data[100001], dnam_age0_epic_M.data[100001], dnam_age0_epic_beta_3IQR_winsorized.data[100001], dnam_age0_epic_beta_3IQR_NA.data[100001]), use = "pairwise.complete.obs")
-cor(data.frame(dnam_age0_epic_beta.data[100002], dnam_age0_epic_M.data[100002], dnam_age0_epic_beta_3IQR_winsorized.data[100002], dnam_age0_epic_beta_3IQR_NA.data[100002]), use = "pairwise.complete.obs")
-cor(data.frame(dnam_age0_epic_beta.data[100003], dnam_age0_epic_M.data[100003], dnam_age0_epic_beta_3IQR_winsorized.data[100003], dnam_age0_epic_beta_3IQR_NA.data[100003]), use = "pairwise.complete.obs")
+cor(data.frame(GENR_EPICv1METH_Norm_Betas_birth_ALL.data[100000], GENR_EPICv1METH_Norm_Mvalues_birth.data[100000], GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data[100000], GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data[100000]), use = "pairwise.complete.obs")
+cor(data.frame(GENR_EPICv1METH_Norm_Betas_birth_ALL.data[100001], GENR_EPICv1METH_Norm_Mvalues_birth.data[100001], GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data[100001], GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data[100001]), use = "pairwise.complete.obs")
+cor(data.frame(GENR_EPICv1METH_Norm_Betas_birth_ALL.data[100002], GENR_EPICv1METH_Norm_Mvalues_birth.data[100002], GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data[100002], GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data[100002]), use = "pairwise.complete.obs")
+cor(data.frame(GENR_EPICv1METH_Norm_Betas_birth_ALL.data[100003], GENR_EPICv1METH_Norm_Mvalues_birth.data[100003], GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data[100003], GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data[100003]), use = "pairwise.complete.obs")
 
 # Descriptives
 descriptives <- function(cpg_name){
@@ -109,6 +111,7 @@ descriptives <- function(cpg_name){
   data.frame(cpg_name,cpg_mean,cpg_sd,cpg_min,cpg_quartile_1,cpg_median,cpg_quartile_3,cpg_max,cpg_iqr,cpg_bottom_3iqr,cpg_top_3iqr,cpg_outlier_bottom_n,cpg_outlier_top_n,cpg_na)
 }
 
-descriptives.list <- lapply(names(dnam_age0_epic_beta.data), descriptives)
-
+descriptives.list <- lapply(names(GENR_EPICv1METH_Norm_Betas_birth_ALL.data), descriptives)
+GENR_EPICv1METH_birth_descriptives.data <- do.call(rbind, descriptives.list)
+save(GENR_EPICv1METH_birth_descriptives.data, file = "data/final/GENR_EPICv1METH_birth_descriptives.RData")
 
