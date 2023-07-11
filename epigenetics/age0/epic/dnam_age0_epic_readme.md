@@ -2,7 +2,7 @@
 ## Data description
 ### Methylation data
 Methylation at birth as assessed by the EPIC array is available in four .RData files. Each file can be read into R with load("GENR_EPICv1METH_Norm_\*.Rdata"). It is then available in the R environment as a data.frame with the format GENR_EPICv1METH_Norm_\*.data. The data requires about 7GB of memory, but in practice at least 20GB
-should be reserved. The data.frame contains 1115 participants (rows) and 808,183 CpG sites (columns). All CpGs passed quality control and both autosomal and allosomal CpGs are included. Row.names are SampleIDs.
+should be reserved. The data.frame contains 1115 participants (columns) and 808,183 CpG sites (rows). All CpGs passed quality control and both autosomal and allosomal CpGs are included. Row.names are SampleIDs.
 
 - **GENR_EPICv1METH_Norm_Betas_birth_ALL.RData**: Matrix of BETA methylation values. Normalized with quantile normalization and values can range from 0-1.
 - **GENR_EPICv1METH_Norm_Betas_birth_3IQR3IQRwinsorized.RData**: BETA methylation values, but outliers exceeding 3rd Quartile+3*IQR or below 1st Quarile-3\*IQR were replaced with highest/lowest non-outlying value.
