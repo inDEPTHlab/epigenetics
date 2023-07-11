@@ -91,6 +91,23 @@ cor(data.frame(GENR_EPICv1METH_Norm_Betas_birth_ALL.data[100001], GENR_EPICv1MET
 cor(data.frame(GENR_EPICv1METH_Norm_Betas_birth_ALL.data[100002], GENR_EPICv1METH_Norm_Mvalues_birth.data[100002], GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data[100002], GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data[100002]), use = "pairwise.complete.obs")
 cor(data.frame(GENR_EPICv1METH_Norm_Betas_birth_ALL.data[100003], GENR_EPICv1METH_Norm_Mvalues_birth.data[100003], GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data[100003], GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data[100003]), use = "pairwise.complete.obs")
 
+# Transpose so that CpG are rows and participants are columns, to be consistent with 450K data
+load("data/final/GENR_EPICv1METH_Norm_Betas_birth_ALL.RData")
+GENR_EPICv1METH_Norm_Betas_birth_ALL.data <- as.data.frame(t(GENR_EPICv1METH_Norm_Betas_birth_ALL.data))
+save(GENR_EPICv1METH_Norm_Betas_birth_ALL.data, file = "data/final/GENR_EPICv1METH_Norm_Betas_birth_ALL.RData")
+
+load("data/final/GENR_EPICv1METH_Norm_Mvalues_birth.RData")
+GENR_EPICv1METH_Norm_Mvalues_birth.data <- as.data.frame(t(GENR_EPICv1METH_Norm_Mvalues_birth.data))
+save(GENR_EPICv1METH_Norm_Mvalues_birth.data, file = "data/final/GENR_EPICv1METH_Norm_Mvalues_birth.RData")
+
+load("data/final/GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.RData")
+GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data <- as.data.frame(t(GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data))
+save(GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.data, file = "data/final/GENR_EPICv1METH_Norm_Betas_birth_3IQRwinsorized.RData")
+
+load("data/final/GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.RData")
+GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data <- as.data.frame(t(GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data))
+save(GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.data, file = "data/final/GENR_EPICv1METH_Norm_Betas_birth_3IQRNA.RData")
+
 # Descriptives
 descriptives <- function(cpg_name){
   cpg <- dnam_age0_epic_beta.data[,cpg_name]

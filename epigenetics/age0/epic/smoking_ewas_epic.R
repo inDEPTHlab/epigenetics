@@ -71,6 +71,9 @@ phenotype_imputed.data$msmoke <- relevel(phenotype_imputed.data$msmoke, ref = "n
 # Load EPIC methylation data
 load("data/final/GENR_EPICv1METH_Norm_Betas_birth_ALL.RData")
 
+# Transpose, so that columns are CpGs and rows are participants
+GENR_EPICv1METH_Norm_Betas_birth_ALL.data <- as.data.frame(t(GENR_EPICv1METH_Norm_Betas_birth_ALL.data))
+
 # Match methylation data participants to phenotype data
 GENR_EPICv1METH_Norm_Betas_birth_ALL.data <- GENR_EPICv1METH_Norm_Betas_birth_ALL.data[as.character(phenotype_imputed.data$SampleID), ]
 table(row.names(GENR_EPICv1METH_Norm_Betas_birth_ALL.data) == phenotype_imputed.data$SampleID)
